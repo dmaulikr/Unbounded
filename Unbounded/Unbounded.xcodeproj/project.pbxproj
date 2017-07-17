@@ -16,6 +16,7 @@
 		825CB5D11F1810D90082EC54 /* ShopScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 825CB5D01F1810D90082EC54 /* ShopScreen.swift */; };
 		827269E91F13EFA000E32FE6 /* MSButtonNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 827269E81F13EFA000E32FE6 /* MSButtonNode.swift */; };
 		827269EB1F1421BB00E32FE6 /* Trail.sks in Resources */ = {isa = PBXBuildFile; fileRef = 827269EA1F1421BB00E32FE6 /* Trail.sks */; };
+		828684FB1F183E0A00B293BD /* Items.swift in Sources */ = {isa = PBXBuildFile; fileRef = 828684FA1F183E0A00B293BD /* Items.swift */; };
 		829FA3671F16E1DE00CB691F /* GameScene.sks in Resources */ = {isa = PBXBuildFile; fileRef = 829FA3661F16E1DE00CB691F /* GameScene.sks */; };
 		82B52E101F16E5C7000B9D59 /* Coin.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82B52E0F1F16E5C7000B9D59 /* Coin.swift */; };
 		82CFFA6F1F1446590007C7A9 /* exo-2-0.light.otf in Resources */ = {isa = PBXBuildFile; fileRef = 82CFFA6E1F1446590007C7A9 /* exo-2-0.light.otf */; };
@@ -27,6 +28,7 @@
 		82D5662F1F01AE3300D74068 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 82D5662E1F01AE3300D74068 /* Assets.xcassets */; };
 		82D566321F01AE3300D74068 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 82D566301F01AE3300D74068 /* LaunchScreen.storyboard */; };
 		82D5663A1F01B31500D74068 /* Platform.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82D566391F01B31500D74068 /* Platform.swift */; };
+		82D59EBD1F1D68C400E021FA /* Colors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82D59EBC1F1D68C400E021FA /* Colors.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -39,6 +41,7 @@
 		825CB5D01F1810D90082EC54 /* ShopScreen.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ShopScreen.swift; sourceTree = "<group>"; };
 		827269E81F13EFA000E32FE6 /* MSButtonNode.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MSButtonNode.swift; sourceTree = "<group>"; };
 		827269EA1F1421BB00E32FE6 /* Trail.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = Trail.sks; sourceTree = "<group>"; };
+		828684FA1F183E0A00B293BD /* Items.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Items.swift; sourceTree = "<group>"; };
 		829FA3661F16E1DE00CB691F /* GameScene.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = GameScene.sks; sourceTree = "<group>"; };
 		82B52E0F1F16E5C7000B9D59 /* Coin.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Coin.swift; sourceTree = "<group>"; };
 		82CFFA6E1F1446590007C7A9 /* exo-2-0.light.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "exo-2-0.light.otf"; sourceTree = "<group>"; };
@@ -52,6 +55,7 @@
 		82D566311F01AE3300D74068 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		82D566331F01AE3300D74068 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		82D566391F01B31500D74068 /* Platform.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Platform.swift; sourceTree = "<group>"; };
+		82D59EBC1F1D68C400E021FA /* Colors.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Colors.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -89,6 +93,7 @@
 				82D566271F01AE3300D74068 /* GameScene.swift */,
 				825CB5CE1F17F7F90082EC54 /* ShopScreen.sks */,
 				825CB5D01F1810D90082EC54 /* ShopScreen.swift */,
+				828684FA1F183E0A00B293BD /* Items.swift */,
 				82B52E0F1F16E5C7000B9D59 /* Coin.swift */,
 				8214C4371F16BB4B00E0E601 /* streakEffect.sks */,
 				82D566391F01B31500D74068 /* Platform.swift */,
@@ -96,6 +101,7 @@
 				82D566251F01AE3300D74068 /* Actions.sks */,
 				823A82CB1F06C1E9007F9B08 /* Impact.sks */,
 				827269EA1F1421BB00E32FE6 /* Trail.sks */,
+				82D59EBC1F1D68C400E021FA /* Colors.swift */,
 				827269E81F13EFA000E32FE6 /* MSButtonNode.swift */,
 				82D566291F01AE3300D74068 /* GameViewController.swift */,
 				823A82CD1F06D37C007F9B08 /* HitSound.wav */,
@@ -192,10 +198,12 @@
 			buildActionMask = 2147483647;
 			files = (
 				82D566281F01AE3300D74068 /* GameScene.swift in Sources */,
+				82D59EBD1F1D68C400E021FA /* Colors.swift in Sources */,
 				82D5662A1F01AE3300D74068 /* GameViewController.swift in Sources */,
 				8209ECF01F01CE29002F9F5E /* Ball.swift in Sources */,
 				827269E91F13EFA000E32FE6 /* MSButtonNode.swift in Sources */,
 				82D5663A1F01B31500D74068 /* Platform.swift in Sources */,
+				828684FB1F183E0A00B293BD /* Items.swift in Sources */,
 				825CB5D11F1810D90082EC54 /* ShopScreen.swift in Sources */,
 				82D566221F01AE3300D74068 /* AppDelegate.swift in Sources */,
 				82B52E101F16E5C7000B9D59 /* Coin.swift in Sources */,
@@ -326,7 +334,7 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				DEVELOPMENT_TEAM = CL52AX9555;
 				INFOPLIST_FILE = Unbounded/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.3;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = Paxgams.Unbounded;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -342,7 +350,7 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				DEVELOPMENT_TEAM = CL52AX9555;
 				INFOPLIST_FILE = Unbounded/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.3;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = Paxgams.Unbounded;
 				PRODUCT_NAME = "$(TARGET_NAME)";

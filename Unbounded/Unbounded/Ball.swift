@@ -26,9 +26,11 @@ class Ball: SKSpriteNode {
         let texture = SKTexture(imageNamed: "circle")
         let color = UIColor.white
         let size = texture.size()
+       
                 
         super.init(texture: texture, color: color, size: size)
         
+        self.colorBlendFactor = 1.0
         self.xScale = 0.305
         self.yScale = 0.305
         physicsBody = SKPhysicsBody(circleOfRadius: 5)

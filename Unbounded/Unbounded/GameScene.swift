@@ -11,6 +11,8 @@ import GameplayKit
 
 let scoreDefault = UserDefaults.standard
 let bankDefault = UserDefaults.standard
+let itemDefault = UserDefaults.standard
+let shopBuilt = UserDefaults.standard.set(false, forKey: "shopBuilt")
 
 let fixedDelta: CFTimeInterval = 1.0 / 60.0
 enum GameState {
@@ -42,6 +44,10 @@ func clamp<T: Comparable>(value: T, lower: T, upper: T) -> T {
 
 class GameScene: SKScene, SKPhysicsContactDelegate {
     
+    
+    var ballColor: UIColor = .white
+    var platformColor: UIColor = .white
+    
     //world node used to add objects to so that pause can be implemented effectively
     let worldNode = SKNode()
     
@@ -58,7 +64,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     var rightWall: SKSpriteNode!
     var leftWall: SKSpriteNode!
     var ground: SKSpriteNode!
-    var state: GameState = .play
+    var state: GameState = .mainMenu
     var scoreLabel: SKLabelNode!
     var lineStart: CGPoint?
     var lineEnd: CGPoint?
@@ -108,30 +114,45 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     var highscore = 0
     var bankNum = 0
     
-    var hitSound = SKAction.playSoundFileNamed("HitSound.wav", waitForCompletion: false)
+    var hitSound = SKAction.playSoundFileNamed("HitSound", waitForCompletion: false)
     let trail = SKEmitterNode(fileNamed: "Trail.sks")
+    let emitter = SKEmitterNode(fileNamed: "Impact.sks")
     
     
     //initializes all of the nodes and sets the physical properties of the left and right wall
     override func didMove(to view: SKView) {
-        
+
+        print(ballColor)
         if bankDefault.integer(forKey: "bank") != 0 {
             bankNum = bankDefault.integer(forKey: "bank")
         }else {
             bankNum = 0
         }
         
+        trail?.particleColorSequence = nil
+        trail?.particleColorBlendFactor = 1.0
+        trail?.particleColor = ballColor
+        emitter?.particleColorSequence = nil
+        emitter?.particleColorBlendFactor = 1.0
+        emitter?.particleColor = platformColor
+        emitter?.zPosition = -1
+        
         shopButton = childNode(withName: "shopButton") as! MSButtonNode
-        bank = childNode(withName: "bank") as! SKLabelNode
+       
         playStart = childNode(withName: "playStart") as! MSButtonNode
         mainMenuPos = childNode(withName: "mainMenuPos")!
         homeButton = childNode(withName: "homeButton") as! MSButtonNode
+        resetButton = childNode(withName: "resetButton") as! MSButtonNode
+        pauseButtonNode = childNode(withName: "pauseButtonNode") as! MSButtonNode
+        
+        
         self.addChild(worldNode)
         pauseButton = childNode(withName: "pauseButton") as! SKSpriteNode
-        pauseButtonNode = childNode(withName: "pauseButtonNode") as! MSButtonNode
+    
         bounds = childNode(withName: "bounds") as! SKSpriteNode
-        resetButton = childNode(withName: "resetButton") as! MSButtonNode
+        
         highscoreNum = childNode(withName: "highscoreNum") as! SKLabelNode
+        bank = childNode(withName: "bank") as! SKLabelNode
         self.view?.isMultipleTouchEnabled = false
         loseCamera = childNode(withName: "loseCamera") as! SKCameraNode
         self.camera = loseCamera
@@ -150,6 +171,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         firstBall.isHidden = true
         trail?.physicsBody?.affectedByGravity = false
         trail?.targetNode = scene
+        ball.color = ballColor
         ball.addChild(trail?.copy() as! SKEmitterNode)
         ball.position = CGPoint(x: 1.81, y: 136.6)
         ball.physicsBody?.isDynamic = false
@@ -157,8 +179,11 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         highscoreNum.text = String(highscore)
         bank.text = String(bankNum)
         resetButton.alpha = 0
+        loseCamera.position = mainMenuPos.position
         
         shopButton.selectedHandler = {
+            
+            let reveal = SKTransition.flipVertical(withDuration: 0.3)
             if let scene = GKScene(fileNamed: "ShopScreen") {
                 
                 // Get the SKScene from the loaded GKScene
@@ -171,7 +196,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                     
                     // Present the scene
                     if let view = self.view as! SKView? {
-                        view.presentScene(sceneNode)
+                        self.view?.presentScene(sceneNode, transition: reveal)
                         
                         view.ignoresSiblingOrder = true
                         
@@ -184,14 +209,14 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         playStart.selectedHandler = {
             
             self.state = .play
-            self.reset()
             self.cameraTarget = nil
             self.resetCamera()
-            
+            self.coinExist = false
             
         }
         
         homeButton.selectedHandler = {
+            self.reset()
             self.state = .mainMenu
             self.cameraTarget = self.mainMenuPos
         }
@@ -249,6 +274,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             previewEnd = location
             var lineArray: [CGPoint] = [lineStart!, location]
             previewLine = SKShapeNode(points: &lineArray, count: 2)
+            previewLine?.strokeColor = platformColor
             if calcDistance(lineStart!, location) > minLength {
                 addChild(previewLine!)
             }
@@ -274,7 +300,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             let location = touch.location(in:self)
             lineEnd = location
             if calcDistance(lineStart!, location) > minLength {
-                let drawLine = Platform(lineStart!,lineEnd!)
+                let drawLine = Platform(lineStart!,lineEnd!,platformColor)
                 platforms.append(drawLine)
                 worldNode.addChild(drawLine)
                 lineStart = nil
@@ -292,6 +318,12 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     //used to maintain the one platform limit, update the platforms, remove them from the array, and increment timers. Also it's used to modify each balls physics masks in order to ensure that the balls pass through platforms on the bottom but make contact at the top
     override func update(_ currentTime: TimeInterval) {
+        
+        if self.camera?.position.y != 0 {
+            self.isUserInteractionEnabled = false
+        }else {
+            self.isUserInteractionEnabled = true
+        }
         
         highscoreNum.text = String(highscore)
         bank.text = String(bankNum)
@@ -386,6 +418,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     func addBall() {
         
         let newBall = Ball()
+        newBall.color = ballColor
         let decider = arc4random_uniform(2)
         let initialVelocity = Int(arc4random_uniform(200) + 200)
         trail?.physicsBody?.affectedByGravity = false
@@ -443,12 +476,12 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 for platform in platforms {
                     if nodeA.position == platform.position {
                         force = platform.forceScalar
-                        let emitter = SKEmitterNode(fileNamed: "Impact.sks")
-                        platform.addChild(emitter!)
-                        emitter?.particleBirthRate = (emitter?.particleBirthRate)! * force
-                        emitter?.particleScale = (emitter?.particleScale)! * force * 0.2
-                        emitter?.position = position
-                        emitter?.run(SKAction.fadeOut(withDuration: 0.1))
+                        let emitter2 = emitter?.copy() as! SKEmitterNode
+                        platform.addChild(emitter2)
+                        emitter2.particleBirthRate = (emitter?.particleBirthRate)! * force
+                        emitter2.particleScale = (emitter?.particleScale)! * force * 0.2
+                        emitter2.position = position
+                        emitter2.run(SKAction.fadeOut(withDuration: 0.1))
                     }
                 }
                 run(hitSound)
@@ -471,12 +504,12 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 for platform in platforms {
                     if nodeB.position == platform.position {
                         force = platform.forceScalar
-                        let emitter = SKEmitterNode(fileNamed: "Impact.sks")
-                        platform.addChild(emitter!)
-                        emitter?.particleBirthRate = (emitter?.particleBirthRate)! * force
-                        emitter?.particleScale = (emitter?.particleScale)! * force * 0.2
-                        emitter?.position = position
-                        emitter?.run(SKAction.fadeOut(withDuration: 0.1))
+                        let emitter2 = emitter?.copy() as! SKEmitterNode
+                        platform.addChild(emitter2)
+                        emitter2.particleBirthRate = (emitter?.particleBirthRate)! * force
+                        emitter2.particleScale = (emitter?.particleScale)! * force * 0.2
+                        emitter2.position = position
+                        emitter2.run(SKAction.fadeOut(withDuration: 0.1))
                     }
                 }
                 run(hitSound)
@@ -523,9 +556,13 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             }
             state = .gameOver
             resetButton.isUserInteractionEnabled = false
-            resetButton.run(SKAction.fadeIn(withDuration: 1.5))
-            resetButton.isUserInteractionEnabled = true
-            nodeB.physicsBody?.restitution = 0.7
+            isUserInteractionEnabled = false
+            resetButton.run(SKAction.fadeIn(withDuration: 0.5),completion: {
+                self.isUserInteractionEnabled = true
+                self.resetButton.isUserInteractionEnabled = true
+                nodeB.physicsBody?.restitution = 0.7
+            })
+          
         }
         if nodeA.name == "ball" && nodeB.name == "loseArea" {
             calcHighscore()
@@ -538,10 +575,14 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 
             }
             state = .gameOver
+            isUserInteractionEnabled = false
             resetButton.isUserInteractionEnabled = false
-            resetButton.run(SKAction.fadeIn(withDuration: 1.0))
-            resetButton.isUserInteractionEnabled = true
-            nodeA.physicsBody?.restitution = 0.7
+            resetButton.run(SKAction.fadeIn(withDuration: 0.5), completion: {
+                self.isUserInteractionEnabled = true
+                self.resetButton.isUserInteractionEnabled = true
+                nodeA.physicsBody?.restitution = 0.7
+            })
+            
         }
         
         if nodeA.name == "bounds" || nodeB.name == "bounds" {
@@ -550,15 +591,22 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         
         if nodeA.name == "ball" && nodeB.name == "coin" {
-            nodeB.run(SKAction.init(named: "coinCollect")!)
+            nodeB.run(SKAction.init(named: "coinCollect")!,completion: {
+                nodeB.removeFromParent()
+            })
+            
             bankDefault.set(bankDefault.integer(forKey: "bank") + 1, forKey: "bank")
             bankNum = bankDefault.integer(forKey: "bank")
-            
+            coinExist = false
         }
         if nodeB.name == "ball" && nodeA.name == "coin" {
-            nodeA.run(SKAction.init(named: "coinCollect")!)
+            nodeA.run(SKAction.init(named: "coinCollect")!, completion: {
+                nodeA.removeFromParent()
+            })
+            
             bankDefault.set(bankDefault.integer(forKey: "bank") + 1, forKey: "bank")
             bankNum = bankDefault.integer(forKey: "bank")
+            coinExist = false
         }
     }
     
@@ -599,7 +647,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             platforms[0].removeFromParent()
             platforms.removeFirst()
         }
+        coinExist = false
+        coinTimer = 0
         resetButton.run(SKAction.fadeOut(withDuration: 0.3))
+        
         state = .play
         
     }
@@ -639,7 +690,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         //spawn coins at a random time interval
         print(coinTimer)
         if coinTimer > randomTime && !coinExist {
-            randomTime = CFTimeInterval(arc4random_uniform(10) + 15)
+            randomTime = CFTimeInterval(arc4random_uniform(15) + 5)
             coinTimer = 0
             coinExist = true
             let xPos = Int(arc4random_uniform(240)) - 120
@@ -647,8 +698,19 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             let coin = Coin()
             coin.position = CGPoint(x: xPos, y: yPos)
             worldNode.addChild(coin)
-            print("I added a coin")
         }
+    }
+    
+    class func colors(ballColor: UIColor, platColor: UIColor) -> GameScene? {
+        guard let scene = GameScene(fileNamed: "GameScene") else {
+            return nil
+        }
+        
+        scene.scaleMode = .aspectFit
+        scene.ballColor = ballColor
+        scene.platformColor = platColor
+        
+        return scene
     }
 }
 

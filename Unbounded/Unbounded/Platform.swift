@@ -23,7 +23,7 @@ class Platform : SKShapeNode {
     var length: CGFloat?
     
     //ok so this is where it gets weird, you add the child platform node to the scene node but there's another node here that needs to be added to the platform object and the properties get really weird
-    init(_ startPoint: CGPoint, _ endPoint: CGPoint) {
+    init(_ startPoint: CGPoint, _ endPoint: CGPoint, _ color: UIColor) {
         super.init()
         //creates the line
         var line: [CGPoint] = [startPoint, endPoint]
@@ -40,9 +40,9 @@ class Platform : SKShapeNode {
         
         //assigns the line width, stroke color, and line cap
         actualLine.lineWidth = 4
-        actualLine.strokeColor = UIColor.white
+        actualLine.strokeColor = color
         actualLine.lineCap = .round
-        
+        actualLine.zPosition = -1
         //THIS LINE OF CODE IS SUPER DUPER IMPORTANT
         addChild(actualLine)
         
@@ -58,7 +58,7 @@ class Platform : SKShapeNode {
         
        //calculates the distance of the line and then sets the forceScalar relative to the length of the line (the larger the number, the more extreme the scalar becomes)
         length = calcDistance()
-        forceScalar = CGFloat(300 / length!)
+        forceScalar = CGFloat(340 / length!)
         
         //if the line is too long then set the timer to something lower to discourage spam
        // if length! > CGFloat(260) {
