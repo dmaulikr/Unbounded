@@ -12,7 +12,6 @@ import GameplayKit
 let scoreDefault = UserDefaults.standard
 let bankDefault = UserDefaults.standard
 let itemDefault = UserDefaults.standard
-let shopBuilt = UserDefaults.standard.set(false, forKey: "shopBuilt")
 
 let fixedDelta: CFTimeInterval = 1.0 / 60.0
 enum GameState {
@@ -66,6 +65,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     var ground: SKSpriteNode!
     var state: GameState = .mainMenu
     var scoreLabel: SKLabelNode!
+    var loseScoreNum: SKLabelNode!
     var lineStart: CGPoint?
     var lineEnd: CGPoint?
     var loseArea: SKSpriteNode!
@@ -153,6 +153,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         highscoreNum = childNode(withName: "highscoreNum") as! SKLabelNode
         bank = childNode(withName: "bank") as! SKLabelNode
+        loseScoreNum = childNode(withName: "loseScoreNum") as! SKLabelNode
         self.view?.isMultipleTouchEnabled = false
         loseCamera = childNode(withName: "loseCamera") as! SKCameraNode
         self.camera = loseCamera
@@ -184,7 +185,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         shopButton.selectedHandler = {
             
             let reveal = SKTransition.flipVertical(withDuration: 0.3)
-            if let scene = GKScene(fileNamed: "ShopScreen") {
+            if let scene = GKScene(fileNamed: "ShopScreen_1") {
                 
                 // Get the SKScene from the loaded GKScene
                 if let sceneNode = scene.rootNode as! SKScene? {
@@ -356,6 +357,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             }
             //only permits that one platform exists at any given point in time
             scoreLabel.text = String(score)
+            loseScoreNum.text = String(score)
             while platforms.count > 1{
                 platforms[0].removeFromParent()
                 platforms.removeFirst()
@@ -548,7 +550,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         if nodeA.name == "loseArea" && nodeB.name == "ball"  {
             calcHighscore()
             nodeB.physicsBody?.categoryBitMask = 2
-            score = 0
             removeCoins()
             if !targetFound {
                 cameraTarget = nodeB
@@ -567,7 +568,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         if nodeA.name == "ball" && nodeB.name == "loseArea" {
             calcHighscore()
             nodeA.physicsBody?.categoryBitMask = 2
-            score = 0
             removeCoins()
             if !targetFound {
                 cameraTarget = nodeA

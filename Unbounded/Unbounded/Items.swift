@@ -89,6 +89,7 @@ class Items: SKSpriteNode {
             inUse = true
             bought = true
             costLabel.isHidden = true
+            //bankDefault.set(bankDefault.integer(forKey: "bank")-cost, forKey: "bank")
         }else if bought == true {
             for item in itemArray {
                 if item.type == self.type {

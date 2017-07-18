@@ -11,6 +11,8 @@ import SpriteKit
 
 let imgurGreen = UIColor.init(netHex: 0x85BF25)
 let starburstOrange = UIColor.init(netHex: 0xEA604E)
+let royalPurple = UIColor.init(netHex: 0x663399)
+let cerulean = UIColor.init(netHex: 0x2a52be)
 
 
 extension UIColor {

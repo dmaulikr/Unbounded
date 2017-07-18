@@ -12,7 +12,7 @@
 		8214C4381F16BB4B00E0E601 /* streakEffect.sks in Resources */ = {isa = PBXBuildFile; fileRef = 8214C4371F16BB4B00E0E601 /* streakEffect.sks */; };
 		823A82CC1F06C1E9007F9B08 /* Impact.sks in Resources */ = {isa = PBXBuildFile; fileRef = 823A82CB1F06C1E9007F9B08 /* Impact.sks */; };
 		823A82CE1F06D37C007F9B08 /* HitSound.wav in Resources */ = {isa = PBXBuildFile; fileRef = 823A82CD1F06D37C007F9B08 /* HitSound.wav */; };
-		825CB5CF1F17F7F90082EC54 /* ShopScreen.sks in Resources */ = {isa = PBXBuildFile; fileRef = 825CB5CE1F17F7F90082EC54 /* ShopScreen.sks */; };
+		825CB5CF1F17F7F90082EC54 /* ShopScreen_1.sks in Resources */ = {isa = PBXBuildFile; fileRef = 825CB5CE1F17F7F90082EC54 /* ShopScreen_1.sks */; };
 		825CB5D11F1810D90082EC54 /* ShopScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 825CB5D01F1810D90082EC54 /* ShopScreen.swift */; };
 		827269E91F13EFA000E32FE6 /* MSButtonNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 827269E81F13EFA000E32FE6 /* MSButtonNode.swift */; };
 		827269EB1F1421BB00E32FE6 /* Trail.sks in Resources */ = {isa = PBXBuildFile; fileRef = 827269EA1F1421BB00E32FE6 /* Trail.sks */; };
@@ -29,6 +29,7 @@
 		82D566321F01AE3300D74068 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 82D566301F01AE3300D74068 /* LaunchScreen.storyboard */; };
 		82D5663A1F01B31500D74068 /* Platform.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82D566391F01B31500D74068 /* Platform.swift */; };
 		82D59EBD1F1D68C400E021FA /* Colors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82D59EBC1F1D68C400E021FA /* Colors.swift */; };
+		82D59EBF1F1D80CC00E021FA /* ShopScreen_2.sks in Resources */ = {isa = PBXBuildFile; fileRef = 82D59EBE1F1D80CC00E021FA /* ShopScreen_2.sks */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -37,7 +38,7 @@
 		8214C4371F16BB4B00E0E601 /* streakEffect.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = streakEffect.sks; sourceTree = "<group>"; };
 		823A82CB1F06C1E9007F9B08 /* Impact.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = Impact.sks; sourceTree = "<group>"; };
 		823A82CD1F06D37C007F9B08 /* HitSound.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = HitSound.wav; sourceTree = "<group>"; };
-		825CB5CE1F17F7F90082EC54 /* ShopScreen.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = ShopScreen.sks; sourceTree = "<group>"; };
+		825CB5CE1F17F7F90082EC54 /* ShopScreen_1.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = ShopScreen_1.sks; sourceTree = "<group>"; };
 		825CB5D01F1810D90082EC54 /* ShopScreen.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ShopScreen.swift; sourceTree = "<group>"; };
 		827269E81F13EFA000E32FE6 /* MSButtonNode.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MSButtonNode.swift; sourceTree = "<group>"; };
 		827269EA1F1421BB00E32FE6 /* Trail.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = Trail.sks; sourceTree = "<group>"; };
@@ -56,6 +57,7 @@
 		82D566331F01AE3300D74068 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		82D566391F01B31500D74068 /* Platform.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Platform.swift; sourceTree = "<group>"; };
 		82D59EBC1F1D68C400E021FA /* Colors.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Colors.swift; sourceTree = "<group>"; };
+		82D59EBE1F1D80CC00E021FA /* ShopScreen_2.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = ShopScreen_2.sks; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -89,10 +91,11 @@
 			isa = PBXGroup;
 			children = (
 				82D566211F01AE3300D74068 /* AppDelegate.swift */,
-				829FA3661F16E1DE00CB691F /* GameScene.sks */,
 				82D566271F01AE3300D74068 /* GameScene.swift */,
-				825CB5CE1F17F7F90082EC54 /* ShopScreen.sks */,
+				829FA3661F16E1DE00CB691F /* GameScene.sks */,
 				825CB5D01F1810D90082EC54 /* ShopScreen.swift */,
+				825CB5CE1F17F7F90082EC54 /* ShopScreen_1.sks */,
+				82D59EBE1F1D80CC00E021FA /* ShopScreen_2.sks */,
 				828684FA1F183E0A00B293BD /* Items.swift */,
 				82B52E0F1F16E5C7000B9D59 /* Coin.swift */,
 				8214C4371F16BB4B00E0E601 /* streakEffect.sks */,
@@ -178,12 +181,13 @@
 				82D5662D1F01AE3300D74068 /* Main.storyboard in Resources */,
 				8214C4381F16BB4B00E0E601 /* streakEffect.sks in Resources */,
 				82CFFA6F1F1446590007C7A9 /* exo-2-0.light.otf in Resources */,
-				825CB5CF1F17F7F90082EC54 /* ShopScreen.sks in Resources */,
+				825CB5CF1F17F7F90082EC54 /* ShopScreen_1.sks in Resources */,
 				823A82CC1F06C1E9007F9B08 /* Impact.sks in Resources */,
 				82D5662F1F01AE3300D74068 /* Assets.xcassets in Resources */,
 				82D566321F01AE3300D74068 /* LaunchScreen.storyboard in Resources */,
 				827269EB1F1421BB00E32FE6 /* Trail.sks in Resources */,
 				8214C4361F169ED400E0E601 /* Exo2-ExtraLight.otf in Resources */,
+				82D59EBF1F1D80CC00E021FA /* ShopScreen_2.sks in Resources */,
 				823A82CE1F06D37C007F9B08 /* HitSound.wav in Resources */,
 				829FA3671F16E1DE00CB691F /* GameScene.sks in Resources */,
 				82D566261F01AE3300D74068 /* Actions.sks in Resources */,
