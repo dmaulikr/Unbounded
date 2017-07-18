@@ -163,7 +163,7 @@ class ShopScreen: SKScene{
                 }else {
                     itemArray[index].position.x = 100
                 }
-                let numRows = Int((index-15) / 3)
+                let numRows = Int((index - 15) / 3)
                 itemArray[index].position.y = CGFloat(85 - 80 * numRows)
                 addChild(itemArray[index])
             }

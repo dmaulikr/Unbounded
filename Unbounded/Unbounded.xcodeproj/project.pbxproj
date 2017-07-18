@@ -30,6 +30,7 @@
 		82D5663A1F01B31500D74068 /* Platform.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82D566391F01B31500D74068 /* Platform.swift */; };
 		82D59EBD1F1D68C400E021FA /* Colors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82D59EBC1F1D68C400E021FA /* Colors.swift */; };
 		82D59EBF1F1D80CC00E021FA /* ShopScreen_2.sks in Resources */ = {isa = PBXBuildFile; fileRef = 82D59EBE1F1D80CC00E021FA /* ShopScreen_2.sks */; };
+		82D59EC31F1EAC2900E021FA /* whoosh.wav in Resources */ = {isa = PBXBuildFile; fileRef = 82D59EC21F1EAC2900E021FA /* whoosh.wav */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -58,6 +59,7 @@
 		82D566391F01B31500D74068 /* Platform.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Platform.swift; sourceTree = "<group>"; };
 		82D59EBC1F1D68C400E021FA /* Colors.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Colors.swift; sourceTree = "<group>"; };
 		82D59EBE1F1D80CC00E021FA /* ShopScreen_2.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = ShopScreen_2.sks; sourceTree = "<group>"; };
+		82D59EC21F1EAC2900E021FA /* whoosh.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = whoosh.wav; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -108,6 +110,7 @@
 				827269E81F13EFA000E32FE6 /* MSButtonNode.swift */,
 				82D566291F01AE3300D74068 /* GameViewController.swift */,
 				823A82CD1F06D37C007F9B08 /* HitSound.wav */,
+				82D59EC21F1EAC2900E021FA /* whoosh.wav */,
 				82D5662B1F01AE3300D74068 /* Main.storyboard */,
 				82D5662E1F01AE3300D74068 /* Assets.xcassets */,
 				82CFFA6E1F1446590007C7A9 /* exo-2-0.light.otf */,
@@ -186,6 +189,7 @@
 				82D5662F1F01AE3300D74068 /* Assets.xcassets in Resources */,
 				82D566321F01AE3300D74068 /* LaunchScreen.storyboard in Resources */,
 				827269EB1F1421BB00E32FE6 /* Trail.sks in Resources */,
+				82D59EC31F1EAC2900E021FA /* whoosh.wav in Resources */,
 				8214C4361F169ED400E0E601 /* Exo2-ExtraLight.otf in Resources */,
 				82D59EBF1F1D80CC00E021FA /* ShopScreen_2.sks in Resources */,
 				823A82CE1F06D37C007F9B08 /* HitSound.wav in Resources */,

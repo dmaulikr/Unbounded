@@ -117,6 +117,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     var hitSound = SKAction.playSoundFileNamed("HitSound", waitForCompletion: false)
     let trail = SKEmitterNode(fileNamed: "Trail.sks")
     let emitter = SKEmitterNode(fileNamed: "Impact.sks")
+    var whoosh = SKAction.playSoundFileNamed("whoosh", waitForCompletion: true)
     
     
     //initializes all of the nodes and sets the physical properties of the left and right wall
@@ -211,8 +212,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             
             self.state = .play
             self.cameraTarget = nil
+            self.run(self.whoosh)
             self.resetCamera()
             self.coinExist = false
+            
             
         }
         
@@ -220,6 +223,11 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             self.reset()
             self.state = .mainMenu
             self.cameraTarget = self.mainMenuPos
+            self.run(self.whoosh)
+            self.worldNode.isPaused = false
+            self.pauseButton.texture = SKTexture(imageNamed: "pauseButton")
+            self.physicsWorld.speed = 1
+            
         }
         
         pauseButtonNode.selectedHandler = {
@@ -240,6 +248,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             print(self.numberOfBalls())
             self.resetCamera()
             self.reset()
+            self.worldNode.isPaused = false
+            self.pauseButton.texture = SKTexture(imageNamed: "pauseButton")
+            self.physicsWorld.speed = 1
             
             //to address any bugs where the score isn't set to zero when the lose screen begins
             self.score = 0
@@ -647,6 +658,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             platforms[0].removeFromParent()
             platforms.removeFirst()
         }
+        score = 0
         coinExist = false
         coinTimer = 0
         resetButton.run(SKAction.fadeOut(withDuration: 0.3))
@@ -660,7 +672,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     func resetCamera() {
         let cameraReset = SKAction.move(to: CGPoint(x:0, y:0), duration: 1.0)
         cameraReset.timingMode = .easeInEaseOut
-        let cameraDelay = SKAction.wait(forDuration: 0.5)
+        let cameraDelay = SKAction.wait(forDuration: 0.1)
         let cameraSequence = SKAction.sequence([cameraDelay, cameraReset])
         loseCamera.run(cameraSequence)
         targetFound = false
