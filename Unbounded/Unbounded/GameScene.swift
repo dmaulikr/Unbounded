@@ -8,6 +8,7 @@
 
 import SpriteKit
 import GameplayKit
+import CoreMotion
 
 let scoreDefault = UserDefaults.standard
 let bankDefault = UserDefaults.standard
@@ -15,7 +16,7 @@ let itemDefault = UserDefaults.standard
 
 let fixedDelta: CFTimeInterval = 1.0 / 60.0
 enum GameState {
-    case play, gameOver, mainMenu, paused
+    case play, gameOver, mainMenu, paused, ready
 }
 
 //function used to scale a vector based on a given scalar
@@ -55,7 +56,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     //boolean used to determine whether the game has started and then begin incrementing timers
     var gameStarted: Bool = false
-    
+    var sparkleBool: Bool = false
     var coinExist: Bool = false
     
     //boolean used to determine whether a cameraTarget is assigned
@@ -64,6 +65,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     var leftWall: SKSpriteNode!
     var ground: SKSpriteNode!
     var state: GameState = .mainMenu
+    var homeIcon: SKSpriteNode!
     var scoreLabel: SKLabelNode!
     var loseScoreNum: SKLabelNode!
     var lineStart: CGPoint?
@@ -75,6 +77,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     var previewLine: SKShapeNode?
     var previewEnd: CGPoint?
     var bank: SKLabelNode!
+    var mainMenuBank: SKLabelNode!
   
     var pauseButton: SKSpriteNode!
     
@@ -84,6 +87,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     var pauseButtonNode: MSButtonNode!
     var homeButton: MSButtonNode!
     var shopButton: MSButtonNode!
+    var multiplayerButton: MSButtonNode!
     
     
  
@@ -114,42 +118,52 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     var highscore = 0
     var bankNum = 0
     
+    
+    var motionManager = CMMotionManager()
+    
     var hitSound = SKAction.playSoundFileNamed("HitSound", waitForCompletion: false)
     let trail = SKEmitterNode(fileNamed: "Trail.sks")
     let emitter = SKEmitterNode(fileNamed: "Impact.sks")
     var whoosh = SKAction.playSoundFileNamed("whoosh", waitForCompletion: true)
-    
+    let pulse = SKAction.init(named: "pulse")
+    var sparkle = SKEmitterNode(fileNamed: "sparkle.sks")
     
     //initializes all of the nodes and sets the physical properties of the left and right wall
     override func didMove(to view: SKView) {
 
-        print(ballColor)
+        motionManager.accelerometerUpdateInterval = 0.2
         if bankDefault.integer(forKey: "bank") != 0 {
             bankNum = bankDefault.integer(forKey: "bank")
         }else {
             bankNum = 0
         }
+        checkBonus()
         
         trail?.particleColorSequence = nil
         trail?.particleColorBlendFactor = 1.0
-        trail?.particleColor = ballColor
+        trail?.zPosition = -1
+        if ballColor != .clear {
+            trail?.particleColor = ballColor
+        }else {
+            trail?.particleColor = .white
+        }
         emitter?.particleColorSequence = nil
         emitter?.particleColorBlendFactor = 1.0
         emitter?.particleColor = platformColor
         emitter?.zPosition = -1
         
         shopButton = childNode(withName: "shopButton") as! MSButtonNode
-       
+        multiplayerButton = childNode(withName: "multiplayerButton") as! MSButtonNode
         playStart = childNode(withName: "playStart") as! MSButtonNode
         mainMenuPos = childNode(withName: "mainMenuPos")!
         homeButton = childNode(withName: "homeButton") as! MSButtonNode
         resetButton = childNode(withName: "resetButton") as! MSButtonNode
         pauseButtonNode = childNode(withName: "pauseButtonNode") as! MSButtonNode
-        
+        mainMenuBank = childNode(withName: "mainMenuBank") as! SKLabelNode!
         
         self.addChild(worldNode)
         pauseButton = childNode(withName: "pauseButton") as! SKSpriteNode
-    
+        homeIcon = childNode(withName: "homeIcon") as! SKSpriteNode
         bounds = childNode(withName: "bounds") as! SKSpriteNode
         
         highscoreNum = childNode(withName: "highscoreNum") as! SKLabelNode
@@ -175,15 +189,48 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         trail?.targetNode = scene
         ball.color = ballColor
         ball.addChild(trail?.copy() as! SKEmitterNode)
+        if sparkleBool {
+            sparkle?.physicsBody?.affectedByGravity = false
+            sparkle?.targetNode = scene
+            ball.addChild(sparkle?.copy() as! SKEmitterNode)
+        }
         ball.position = CGPoint(x: 1.81, y: 136.6)
         ball.physicsBody?.isDynamic = false
         worldNode.addChild(ball)
         highscoreNum.text = String(highscore)
         bank.text = String(bankNum)
+        mainMenuBank.text = String(bankNum)
         resetButton.alpha = 0
         loseCamera.position = mainMenuPos.position
         
-        shopButton.selectedHandler = {
+        multiplayerButton.selectedHandler = {  [unowned self] in
+            
+            let reveal = SKTransition.push(with: SKTransitionDirection.right, duration: 0.25)
+            if let scene = GKScene(fileNamed: "Multiplayer") {
+                
+                // Get the SKScene from the loaded GKScene
+                if let sceneNode = scene.rootNode as! SKScene? {
+                    
+                    // Copy gameplay related content over to the scene
+                    
+                    // Set the scale mode to scale to fit the window
+                    sceneNode.scaleMode = .aspectFill
+                    
+                    // Present the scene
+                    if let view = self.view as! SKView? {
+                        self.view?.presentScene(sceneNode, transition: reveal)
+                        
+                        view.ignoresSiblingOrder = true
+                        
+                        view.showsFPS = true
+                        view.showsNodeCount = true
+                    }
+                }
+            }
+
+        }
+        
+        shopButton.selectedHandler = { [unowned self] in
             
             let reveal = SKTransition.flipVertical(withDuration: 0.3)
             if let scene = GKScene(fileNamed: "ShopScreen_1") {
@@ -208,7 +255,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 }
             }
         }
-        playStart.selectedHandler = {
+        playStart.selectedHandler = {  [unowned self] in
             
             self.state = .play
             self.cameraTarget = nil
@@ -219,7 +266,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             
         }
         
-        homeButton.selectedHandler = {
+        homeButton.selectedHandler = {  [unowned self] in
             self.reset()
             self.state = .mainMenu
             self.cameraTarget = self.mainMenuPos
@@ -227,10 +274,12 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             self.worldNode.isPaused = false
             self.pauseButton.texture = SKTexture(imageNamed: "pauseButton")
             self.physicsWorld.speed = 1
+            self.motionManager.stopAccelerometerUpdates()
+            self.resetGravity()
             
         }
         
-        pauseButtonNode.selectedHandler = {
+        pauseButtonNode.selectedHandler = {  [unowned self] in
             if self.worldNode.isPaused == false {
                 self.worldNode.isPaused = true
                 self.pauseButton.texture = SKTexture(imageNamed: "playTexture")
@@ -244,14 +293,15 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             }
             
         }
-        resetButton.selectedHandler = {
+        resetButton.selectedHandler = {  [unowned self] in
             print(self.numberOfBalls())
             self.resetCamera()
             self.reset()
             self.worldNode.isPaused = false
             self.pauseButton.texture = SKTexture(imageNamed: "pauseButton")
             self.physicsWorld.speed = 1
-            
+            self.motionManager.stopAccelerometerUpdates()
+            self.resetGravity()
             //to address any bugs where the score isn't set to zero when the lose screen begins
             self.score = 0
             
@@ -276,7 +326,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
     }
     
-    //constantly cretaes and removes a child node based on the user's touch location
+    //constantly creates and removes a child node based on the user's touch location
     override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
         
         if state == .play {
@@ -287,6 +337,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             var lineArray: [CGPoint] = [lineStart!, location]
             previewLine = SKShapeNode(points: &lineArray, count: 2)
             previewLine?.strokeColor = platformColor
+            previewLine?.alpha = 0.4
+            previewLine?.lineCap = .round
+            previewLine?.glowWidth = 1
             if calcDistance(lineStart!, location) > minLength {
                 addChild(previewLine!)
             }
@@ -339,6 +392,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         highscoreNum.text = String(highscore)
         bank.text = String(bankNum)
+        mainMenuBank.text = String(bankNum)
         moveCamera()
         
         if state == .play {
@@ -402,6 +456,19 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             
         }
         
+        if state == .gameOver {
+            if platforms.count == 1 {
+                platforms[0].removeFromParent()
+                platforms.removeFirst()
+            }
+            if (self.camera?.position.y)! <= CGFloat(-550.0) {
+                cameraTarget = nil
+            }
+            motionManager.startAccelerometerUpdates()
+            if let data = motionManager.accelerometerData {
+                physicsWorld.gravity = CGVector(dx: data.acceleration.x * 5, dy: data.acceleration.y * 5)
+            }
+        }
         
         //the secret to one way platforms also sets ready to Bounce to prevent the slingshot effect from the bottom
         for child in worldNode.children{
@@ -436,12 +503,20 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         let initialVelocity = Int(arc4random_uniform(200) + 200)
         trail?.physicsBody?.affectedByGravity = false
         trail?.targetNode = scene
+        newBall.addChild(trail?.copy() as! SKEmitterNode)
+        
+        if sparkleBool {
+        sparkle?.physicsBody?.affectedByGravity = false
+        sparkle?.targetNode = scene
+        newBall.addChild(sparkle?.copy() as! SKEmitterNode)
+        }
+        
         switch decider {
         case 0:
             
             newBall.position.x = 150
             newBall.position.y = -350
-            newBall.addChild(trail?.copy() as! SKEmitterNode)
+          
             worldNode.addChild(newBall)
             newBall.physicsBody!.applyImpulse(CGVector(dx: -100, dy: initialVelocity))
             newBall.zPosition = zIncrement
@@ -451,7 +526,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             
             newBall.position.x = -150
             newBall.position.y = -350
-            newBall.addChild(trail?.copy() as! SKEmitterNode)
             worldNode.addChild(newBall)
             newBall.physicsBody!.applyImpulse(CGVector(dx: 100, dy: initialVelocity))
             newBall.zPosition = zIncrement
@@ -567,6 +641,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 targetFound = true
             }
             state = .gameOver
+            previewLine?.removeFromParent()
             resetButton.isUserInteractionEnabled = false
             isUserInteractionEnabled = false
             resetButton.run(SKAction.fadeIn(withDuration: 0.5),completion: {
@@ -586,6 +661,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 
             }
             state = .gameOver
+            previewLine?.removeFromParent()
             isUserInteractionEnabled = false
             resetButton.isUserInteractionEnabled = false
             resetButton.run(SKAction.fadeIn(withDuration: 0.5), completion: {
@@ -662,7 +738,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         coinExist = false
         coinTimer = 0
         resetButton.run(SKAction.fadeOut(withDuration: 0.3))
-        
         state = .play
         
     }
@@ -690,6 +765,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         return number
     }
     
+    
+    //MARK: COINS 
+    
     func removeCoins() {
         for child in worldNode.children {
             if child.name == "coin" {
@@ -702,7 +780,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         //spawn coins at a random time interval
         print(coinTimer)
         if coinTimer > randomTime && !coinExist {
-            randomTime = CFTimeInterval(arc4random_uniform(15) + 5)
+            randomTime = CFTimeInterval(arc4random_uniform(10)) + 5
             coinTimer = 0
             coinExist = true
             let xPos = Int(arc4random_uniform(240)) - 120
@@ -713,6 +791,19 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         }
     }
     
+    func resetGravity() {
+        physicsWorld.gravity = CGVector(dx: 0, dy: -2)
+    }
+    
+    
+    func checkBonus() {
+        for item in itemArray {
+            if item.type == .bonus && item.inUse == true {
+                sparkleBool = true
+            }
+        }
+    }
+    //function that allows the shop to pass all of the information in
     class func colors(ballColor: UIColor, platColor: UIColor) -> GameScene? {
         guard let scene = GameScene(fileNamed: "GameScene") else {
             return nil

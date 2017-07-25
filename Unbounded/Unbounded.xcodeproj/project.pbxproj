@@ -8,6 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		8209ECF01F01CE29002F9F5E /* Ball.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8209ECEF1F01CE29002F9F5E /* Ball.swift */; };
+		8213BF5A1F1FC8550051044C /* Multiplayer.sks in Resources */ = {isa = PBXBuildFile; fileRef = 8213BF591F1FC8550051044C /* Multiplayer.sks */; };
+		8213BF5C1F1FD4A10051044C /* Multiplayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8213BF5B1F1FD4A10051044C /* Multiplayer.swift */; };
 		8214C4361F169ED400E0E601 /* Exo2-ExtraLight.otf in Resources */ = {isa = PBXBuildFile; fileRef = 8214C4351F169ED400E0E601 /* Exo2-ExtraLight.otf */; };
 		8214C4381F16BB4B00E0E601 /* streakEffect.sks in Resources */ = {isa = PBXBuildFile; fileRef = 8214C4371F16BB4B00E0E601 /* streakEffect.sks */; };
 		823A82CC1F06C1E9007F9B08 /* Impact.sks in Resources */ = {isa = PBXBuildFile; fileRef = 823A82CB1F06C1E9007F9B08 /* Impact.sks */; };
@@ -18,6 +20,7 @@
 		827269EB1F1421BB00E32FE6 /* Trail.sks in Resources */ = {isa = PBXBuildFile; fileRef = 827269EA1F1421BB00E32FE6 /* Trail.sks */; };
 		828684FB1F183E0A00B293BD /* Items.swift in Sources */ = {isa = PBXBuildFile; fileRef = 828684FA1F183E0A00B293BD /* Items.swift */; };
 		829FA3671F16E1DE00CB691F /* GameScene.sks in Resources */ = {isa = PBXBuildFile; fileRef = 829FA3661F16E1DE00CB691F /* GameScene.sks */; };
+		82A3780E1F27BE7500C340D3 /* sparkle.sks in Resources */ = {isa = PBXBuildFile; fileRef = 82A3780D1F27BE7500C340D3 /* sparkle.sks */; };
 		82B52E101F16E5C7000B9D59 /* Coin.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82B52E0F1F16E5C7000B9D59 /* Coin.swift */; };
 		82CFFA6F1F1446590007C7A9 /* exo-2-0.light.otf in Resources */ = {isa = PBXBuildFile; fileRef = 82CFFA6E1F1446590007C7A9 /* exo-2-0.light.otf */; };
 		82D566221F01AE3300D74068 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82D566211F01AE3300D74068 /* AppDelegate.swift */; };
@@ -35,6 +38,8 @@
 
 /* Begin PBXFileReference section */
 		8209ECEF1F01CE29002F9F5E /* Ball.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Ball.swift; sourceTree = "<group>"; };
+		8213BF591F1FC8550051044C /* Multiplayer.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = Multiplayer.sks; sourceTree = "<group>"; };
+		8213BF5B1F1FD4A10051044C /* Multiplayer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Multiplayer.swift; sourceTree = "<group>"; };
 		8214C4351F169ED400E0E601 /* Exo2-ExtraLight.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Exo2-ExtraLight.otf"; sourceTree = "<group>"; };
 		8214C4371F16BB4B00E0E601 /* streakEffect.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = streakEffect.sks; sourceTree = "<group>"; };
 		823A82CB1F06C1E9007F9B08 /* Impact.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = Impact.sks; sourceTree = "<group>"; };
@@ -45,6 +50,7 @@
 		827269EA1F1421BB00E32FE6 /* Trail.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = Trail.sks; sourceTree = "<group>"; };
 		828684FA1F183E0A00B293BD /* Items.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Items.swift; sourceTree = "<group>"; };
 		829FA3661F16E1DE00CB691F /* GameScene.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = GameScene.sks; sourceTree = "<group>"; };
+		82A3780D1F27BE7500C340D3 /* sparkle.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = sparkle.sks; sourceTree = "<group>"; };
 		82B52E0F1F16E5C7000B9D59 /* Coin.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Coin.swift; sourceTree = "<group>"; };
 		82CFFA6E1F1446590007C7A9 /* exo-2-0.light.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "exo-2-0.light.otf"; sourceTree = "<group>"; };
 		82D5661E1F01AE3300D74068 /* Unbounded.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Unbounded.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -99,8 +105,11 @@
 				825CB5CE1F17F7F90082EC54 /* ShopScreen_1.sks */,
 				82D59EBE1F1D80CC00E021FA /* ShopScreen_2.sks */,
 				828684FA1F183E0A00B293BD /* Items.swift */,
+				8213BF5B1F1FD4A10051044C /* Multiplayer.swift */,
+				8213BF591F1FC8550051044C /* Multiplayer.sks */,
 				82B52E0F1F16E5C7000B9D59 /* Coin.swift */,
 				8214C4371F16BB4B00E0E601 /* streakEffect.sks */,
+				82A3780D1F27BE7500C340D3 /* sparkle.sks */,
 				82D566391F01B31500D74068 /* Platform.swift */,
 				8209ECEF1F01CE29002F9F5E /* Ball.swift */,
 				82D566251F01AE3300D74068 /* Actions.sks */,
@@ -183,6 +192,7 @@
 			files = (
 				82D5662D1F01AE3300D74068 /* Main.storyboard in Resources */,
 				8214C4381F16BB4B00E0E601 /* streakEffect.sks in Resources */,
+				8213BF5A1F1FC8550051044C /* Multiplayer.sks in Resources */,
 				82CFFA6F1F1446590007C7A9 /* exo-2-0.light.otf in Resources */,
 				825CB5CF1F17F7F90082EC54 /* ShopScreen_1.sks in Resources */,
 				823A82CC1F06C1E9007F9B08 /* Impact.sks in Resources */,
@@ -192,6 +202,7 @@
 				82D59EC31F1EAC2900E021FA /* whoosh.wav in Resources */,
 				8214C4361F169ED400E0E601 /* Exo2-ExtraLight.otf in Resources */,
 				82D59EBF1F1D80CC00E021FA /* ShopScreen_2.sks in Resources */,
+				82A3780E1F27BE7500C340D3 /* sparkle.sks in Resources */,
 				823A82CE1F06D37C007F9B08 /* HitSound.wav in Resources */,
 				829FA3671F16E1DE00CB691F /* GameScene.sks in Resources */,
 				82D566261F01AE3300D74068 /* Actions.sks in Resources */,
@@ -209,6 +220,7 @@
 				82D59EBD1F1D68C400E021FA /* Colors.swift in Sources */,
 				82D5662A1F01AE3300D74068 /* GameViewController.swift in Sources */,
 				8209ECF01F01CE29002F9F5E /* Ball.swift in Sources */,
+				8213BF5C1F1FD4A10051044C /* Multiplayer.swift in Sources */,
 				827269E91F13EFA000E32FE6 /* MSButtonNode.swift in Sources */,
 				82D5663A1F01B31500D74068 /* Platform.swift in Sources */,
 				828684FB1F183E0A00B293BD /* Items.swift in Sources */,
@@ -342,7 +354,7 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				DEVELOPMENT_TEAM = CL52AX9555;
 				INFOPLIST_FILE = Unbounded/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.3;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = Paxgams.Unbounded;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -358,7 +370,7 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				DEVELOPMENT_TEAM = CL52AX9555;
 				INFOPLIST_FILE = Unbounded/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.3;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = Paxgams.Unbounded;
 				PRODUCT_NAME = "$(TARGET_NAME)";

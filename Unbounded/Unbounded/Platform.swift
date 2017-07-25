@@ -21,6 +21,7 @@ class Platform : SKShapeNode {
     var exist: Bool = true
     var defaultLimit: Double = 3
     var length: CGFloat?
+    var actualLine: SKShapeNode!
     
     //ok so this is where it gets weird, you add the child platform node to the scene node but there's another node here that needs to be added to the platform object and the properties get really weird
     init(_ startPoint: CGPoint, _ endPoint: CGPoint, _ color: UIColor) {
@@ -29,8 +30,8 @@ class Platform : SKShapeNode {
         var line: [CGPoint] = [startPoint, endPoint]
         
         //initializes the line as a shape node
-        let actualLine = SKShapeNode(points: &line, count: 2)
-        
+       
+        actualLine =  SKShapeNode(points: &line, count: 2)
         //creates the physics body which overlaps the line
         actualLine.physicsBody = SKPhysicsBody(edgeFrom: startPoint, to: endPoint)
         
@@ -50,7 +51,8 @@ class Platform : SKShapeNode {
         //since I don't know which body is the real body, the physics body or the class body I just modified both of them and set the masks accordingly
         actualLine.physicsBody?.categoryBitMask = 8
         self.physicsBody?.categoryBitMask = 8
-        actualLine.physicsBody?.contactTestBitMask = 4294967295
+        actualLine.physicsBody?.contactTestBitMask = 1
+        self.physicsBody?.contactTestBitMask = 1
         actualLine.physicsBody?.collisionBitMask = 0
         self.physicsBody?.collisionBitMask = 0
         collision = actualLine.physicsBody?.collisionBitMask
@@ -66,6 +68,14 @@ class Platform : SKShapeNode {
       //  }
     }
     
+    
+    convenience init(_ startPoint: CGPoint, _ endPoint: CGPoint, _ color: UIColor, _ mask: UInt32) {
+       
+      self.init(startPoint, endPoint, color)
+        actualLine.physicsBody?.categoryBitMask = mask
+        self.physicsBody?.categoryBitMask = mask
+        
+    }
     //updates the time interval and removes the platform if it exceeds the limit
     func update() {
         
