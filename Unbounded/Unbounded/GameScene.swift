@@ -14,6 +14,9 @@ let scoreDefault = UserDefaults.standard
 let bankDefault = UserDefaults.standard
 let itemDefault = UserDefaults.standard
 
+
+
+
 let fixedDelta: CFTimeInterval = 1.0 / 60.0
 enum GameState {
     case play, gameOver, mainMenu, paused, ready
@@ -56,18 +59,21 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     //boolean used to determine whether the game has started and then begin incrementing timers
     var gameStarted: Bool = false
-    var sparkleBool: Bool = false
+    var bonusExist: Bool = false
     var coinExist: Bool = false
+    var isDay: Bool = false
     
     //boolean used to determine whether a cameraTarget is assigned
     var targetFound: Bool = false
     var rightWall: SKSpriteNode!
     var leftWall: SKSpriteNode!
+    var dayNightIcon: SKSpriteNode!
     var ground: SKSpriteNode!
     var state: GameState = .mainMenu
     var homeIcon: SKSpriteNode!
     var scoreLabel: SKLabelNode!
     var loseScoreNum: SKLabelNode!
+    var resetButtonIcon: SKSpriteNode!
     var lineStart: CGPoint?
     var lineEnd: CGPoint?
     var loseArea: SKSpriteNode!
@@ -78,7 +84,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     var previewEnd: CGPoint?
     var bank: SKLabelNode!
     var mainMenuBank: SKLabelNode!
-  
+    var tutorial: SKReferenceNode!
+    
     var pauseButton: SKSpriteNode!
     
     //Buttons!!
@@ -88,9 +95,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     var homeButton: MSButtonNode!
     var shopButton: MSButtonNode!
     var multiplayerButton: MSButtonNode!
+    var dayNightButton: MSButtonNode!
+    var addBallThreshold = 5
+    var showTutorial = true
     
-    
- 
     
     var bounds: SKSpriteNode!
     let ball = Ball()
@@ -104,7 +112,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     //Timer used to determine how often a ball gets added
     var ballTimer: CFTimeInterval = 0
     var coinTimer: CFTimeInterval = 0
-    var randomTime = CFTimeInterval(arc4random_uniform(10) + 15)
+    var randomTime = CFTimeInterval(arc4random_uniform(5) + 5)
     
     //used to add each ball to a different z Position
     var zIncrement:CGFloat = 1
@@ -120,24 +128,56 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     
     var motionManager = CMMotionManager()
-    
+    var whoosh = SKAction.playSoundFileNamed("whoosh", waitForCompletion: true)
     var hitSound = SKAction.playSoundFileNamed("HitSound", waitForCompletion: false)
+    var coinSound = SKAction.playSoundFileNamed("coinSound2", waitForCompletion: false)
     let trail = SKEmitterNode(fileNamed: "Trail.sks")
     let emitter = SKEmitterNode(fileNamed: "Impact.sks")
-    var whoosh = SKAction.playSoundFileNamed("whoosh", waitForCompletion: true)
     let pulse = SKAction.init(named: "pulse")
     var sparkle = SKEmitterNode(fileNamed: "sparkle.sks")
+    var rainbow = SKEmitterNode(fileNamed: "rainbow.sks")
+    var bonusTrail: SKEmitterNode?
     
     //initializes all of the nodes and sets the physical properties of the left and right wall
     override func didMove(to view: SKView) {
-
+        
+    
+        
+        isDay = bankDefault.bool(forKey: "isDay")
+  
+        if isDay {
+        negateValues()
+        }
+        checkBonus()
+        if bonusExist {
+            for item in itemArray {
+                
+                if item.itemColor == gold && item.inUse {
+                    bonusTrail = sparkle
+                    
+                    break
+                }else if item.itemColor == UIColor.clear && item.inUse {
+                    bonusTrail = rainbow
+                  
+                    break
+                }
+                
+            }
+      
+            
+        }
+        
         motionManager.accelerometerUpdateInterval = 0.2
         if bankDefault.integer(forKey: "bank") != 0 {
             bankNum = bankDefault.integer(forKey: "bank")
         }else {
             bankNum = 0
         }
-        checkBonus()
+        
+        
+        if platformColor == .clear {
+            platformColor = UIColor.init(white: 1.0, alpha: 0.2)
+        }
         
         trail?.particleColorSequence = nil
         trail?.particleColorBlendFactor = 1.0
@@ -152,6 +192,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         emitter?.particleColor = platformColor
         emitter?.zPosition = -1
         
+        
+        tutorial = childNode(withName: "tutorial") as! SKReferenceNode
         shopButton = childNode(withName: "shopButton") as! MSButtonNode
         multiplayerButton = childNode(withName: "multiplayerButton") as! MSButtonNode
         playStart = childNode(withName: "playStart") as! MSButtonNode
@@ -159,11 +201,13 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         homeButton = childNode(withName: "homeButton") as! MSButtonNode
         resetButton = childNode(withName: "resetButton") as! MSButtonNode
         pauseButtonNode = childNode(withName: "pauseButtonNode") as! MSButtonNode
+        dayNightButton = childNode(withName: "dayNightButton") as! MSButtonNode
         mainMenuBank = childNode(withName: "mainMenuBank") as! SKLabelNode!
-        
+
         self.addChild(worldNode)
         pauseButton = childNode(withName: "pauseButton") as! SKSpriteNode
         homeIcon = childNode(withName: "homeIcon") as! SKSpriteNode
+        resetButtonIcon = childNode(withName: "resetButtonIcon") as! SKSpriteNode
         bounds = childNode(withName: "bounds") as! SKSpriteNode
         
         highscoreNum = childNode(withName: "highscoreNum") as! SKLabelNode
@@ -175,10 +219,14 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         rightWall = childNode(withName: "rightWall") as! SKSpriteNode
         leftWall = childNode(withName: "leftWall") as! SKSpriteNode
         loseArea = childNode(withName: "loseArea") as! SKSpriteNode
+        dayNightIcon = childNode(withName: "dayNightIcon") as! SKSpriteNode
+    
         leftWall.physicsBody?.restitution = 1
         rightWall.physicsBody?.restitution = 1
         leftWall.physicsBody?.linearDamping = 0.2
         rightWall.physicsBody?.linearDamping = 0.2
+        
+        
         ground = childNode(withName: "ground") as! SKSpriteNode
         firstBall = childNode(withName: "firstBall") as! SKSpriteNode
         scoreLabel = childNode(withName: "scoreLabel") as! SKLabelNode
@@ -189,20 +237,69 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         trail?.targetNode = scene
         ball.color = ballColor
         ball.addChild(trail?.copy() as! SKEmitterNode)
-        if sparkleBool {
-            sparkle?.physicsBody?.affectedByGravity = false
-            sparkle?.targetNode = scene
-            ball.addChild(sparkle?.copy() as! SKEmitterNode)
+        if bonusExist {
+            bonusTrail?.physicsBody?.affectedByGravity = false
+            bonusTrail?.targetNode = scene
+            ball.addChild(bonusTrail?.copy() as! SKEmitterNode)
         }
+        
         ball.position = CGPoint(x: 1.81, y: 136.6)
         ball.physicsBody?.isDynamic = false
         worldNode.addChild(ball)
         highscoreNum.text = String(highscore)
         bank.text = String(bankNum)
         mainMenuBank.text = String(bankNum)
-        resetButton.alpha = 0
+        resetButtonIcon.alpha = 0
         loseCamera.position = mainMenuPos.position
+        dayNightIcon.isHidden = true
+        dayNightButton.isUserInteractionEnabled = false
         
+      
+        for item in itemArray {
+            if item.type == .dayNight && item.bought == true {
+                dayNightButton.isUserInteractionEnabled = true
+                dayNightIcon.isHidden = false
+                
+            }
+        }
+        
+        dayNightButton.selectedHandler = { [unowned self] in
+            
+            var ballColor: UIColor = .white
+            var platColor: UIColor = .white
+            for item in itemArray {
+                if item.type == .ball && item.inUse == true {
+                    ballColor = item.itemColor
+                }
+                if item.type == .platform && item.inUse == true {
+                    platColor = item.itemColor
+                }
+                
+                
+            }
+            
+           bankDefault.set(!self.isDay, forKey: "isDay")
+       
+            var reveal = SKTransition.push(with: SKTransitionDirection.up, duration: 0.25)
+            if self.isDay {
+            reveal = SKTransition.push(with: SKTransitionDirection.down, duration: 0.25)
+            }
+            if let view = self.view {
+                // Load the SKScene from 'GameScene.sks'
+                if let scene = GameScene.colors(ballColor: ballColor, platColor: platColor){
+                    scene.isDay = !self.isDay
+                    
+
+                    // Present the scene
+                    self.view?.presentScene(scene, transition: reveal)
+                }
+                
+                view.ignoresSiblingOrder = true
+               
+                
+            }
+            
+        }
         multiplayerButton.selectedHandler = {  [unowned self] in
             
             let reveal = SKTransition.push(with: SKTransitionDirection.right, duration: 0.25)
@@ -214,20 +311,19 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                     // Copy gameplay related content over to the scene
                     
                     // Set the scale mode to scale to fit the window
-                    sceneNode.scaleMode = .aspectFill
+                    sceneNode.scaleMode = .aspectFit
                     
                     // Present the scene
-                    if let view = self.view as! SKView? {
+                    if let view = self.view {
                         self.view?.presentScene(sceneNode, transition: reveal)
                         
                         view.ignoresSiblingOrder = true
                         
-                        view.showsFPS = true
-                        view.showsNodeCount = true
+                    
                     }
                 }
             }
-
+            
         }
         
         shopButton.selectedHandler = { [unowned self] in
@@ -241,16 +337,15 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                     // Copy gameplay related content over to the scene
                     
                     // Set the scale mode to scale to fit the window
-                    sceneNode.scaleMode = .aspectFill
+                    sceneNode.scaleMode = .aspectFit
                     
                     // Present the scene
-                    if let view = self.view as! SKView? {
+                    if let view = self.view {
                         self.view?.presentScene(sceneNode, transition: reveal)
                         
                         view.ignoresSiblingOrder = true
                         
-                        view.showsFPS = true
-                        view.showsNodeCount = true
+                        
                     }
                 }
             }
@@ -314,7 +409,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     //identifies the position of the first touch and stores it
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         
+        
         if state == .play {
+            tutorial.isHidden = true
             if platforms.count == 1 {
                 platforms[0].removeFromParent()
                 platforms.removeFirst()
@@ -355,9 +452,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             //if a new platform is created then turn off all the justContact booleans
             for child in worldNode.children {
                 if child.name == "ball" {
-                let ball = child as! Ball
-                ball.justContact = false
-                ball.readyToBounce = false
+                    let ball = child as! Ball
+                    ball.justContact = false
+                    ball.readyToBounce = false
                 }
             }
             previewLine?.removeFromParent()
@@ -374,7 +471,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 
                 //first ball used as a tutorial function
                 ball.physicsBody?.isDynamic = true
+                showTutorial = false
             }
+            
+           
         }
     }
     
@@ -383,6 +483,13 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     //used to maintain the one platform limit, update the platforms, remove them from the array, and increment timers. Also it's used to modify each balls physics masks in order to ensure that the balls pass through platforms on the bottom but make contact at the top
     override func update(_ currentTime: TimeInterval) {
+        updateBallThreshold()
+     
+        if isDay {
+            dayNightIcon.texture = SKTexture(imageNamed: "dayNightDay")
+        }else {
+            dayNightIcon.texture = SKTexture(imageNamed: "dayNightNight")
+        }
         
         if self.camera?.position.y != 0 {
             self.isUserInteractionEnabled = false
@@ -397,6 +504,32 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         if state == .play {
             
+            if !showTutorial {
+                tutorial.isHidden = true
+            }
+            
+            //the secret to one way platforms also sets ready to Bounce to prevent the slingshot effect from the bottom
+            for child in worldNode.children{
+                
+                if(child.name == "ball") {
+                    let ballBody = child as! Ball
+                    
+                    //if the ball has a negative y velocity or has just made contact with a platform, then allow the ball to make contact again
+                    if (child.physicsBody?.velocity.dy)! < CGFloat(0.0) || ballBody.justContact == true {
+                        child.physicsBody?.collisionBitMask = 14
+                        child.physicsBody?.contactTestBitMask = 10
+                        let ball = child as! Ball
+                        ball.readyToBounce = true
+                    }else {
+                        child.physicsBody?.collisionBitMask = 6
+                        child.physicsBody?.contactTestBitMask = 0
+                        let ball = child as! Ball
+                        ball.readyToBounce = false
+                    }
+                }
+            }
+            
+            
             spawnCoins()
             
             //limits the vertical velocity downwards
@@ -404,8 +537,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 if ball.name == "ball" {
                     let ballBody = ball as! Ball
                     ballBody.glitchTimer += fixedDelta
-                    if (ball.physicsBody?.velocity.dy)! <  -CGFloat(300){
-                        ball.physicsBody?.velocity.dy = -300
+                    if (ball.physicsBody?.velocity.dy)! <  -CGFloat(290){
+                        ball.physicsBody?.velocity.dy = -290
                     }
                 }
                 
@@ -413,7 +546,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 if ball.name == "coin" {
                     let coin = ball as! Coin
                     coin.timer +=  fixedDelta
-                    if coin.timer > 10.0 {
+                    
+                    //coin lifetime
+                    if coin.timer > 7.5 {
                         coin.removeFromParent()
                         coinExist = false
                     }
@@ -448,7 +583,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             }
             
             //adds a ball every five seconds (probably should try and scale this exponentially)
-            if ballTimer > 5 {
+            if ballTimer > CFTimeInterval(addBallThreshold) {
                 addBall()
                 ballTimer = 0
                 
@@ -470,45 +605,28 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             }
         }
         
-        //the secret to one way platforms also sets ready to Bounce to prevent the slingshot effect from the bottom
-        for child in worldNode.children{
-          
-            if(child.name == "ball") {
-                 let ballBody = child as! Ball
-                
-                //if the ball has a negative y velocity or has just made contact with a platform, then allow the ball to make contact again
-                if (child.physicsBody?.velocity.dy)! < CGFloat(0.0) || ballBody.justContact == true {
-                    child.physicsBody?.collisionBitMask = 14
-                    child.physicsBody?.contactTestBitMask = 10
-                    let ball = child as! Ball
-                    ball.readyToBounce = true
-                }else {
-                    child.physicsBody?.collisionBitMask = 6
-                    child.physicsBody?.contactTestBitMask = 0
-                    let ball = child as! Ball
-                    ball.readyToBounce = false
-                }
-            }
-        }
+        
+        
         
     }
     
     //introduces new balls into the scene, uses a random number generator to determine which side of the scene
     //the balls spawn on (left or right)
     func addBall() {
-        
+        let num = numberOfBalls()
+        print("I added a Ball \(num) also \(addBallThreshold)")
         let newBall = Ball()
         newBall.color = ballColor
         let decider = arc4random_uniform(2)
-        let initialVelocity = Int(arc4random_uniform(200) + 200)
+        let initialVelocity = Int(arc4random_uniform(200) + 220)
         trail?.physicsBody?.affectedByGravity = false
         trail?.targetNode = scene
         newBall.addChild(trail?.copy() as! SKEmitterNode)
         
-        if sparkleBool {
-        sparkle?.physicsBody?.affectedByGravity = false
-        sparkle?.targetNode = scene
-        newBall.addChild(sparkle?.copy() as! SKEmitterNode)
+        if bonusExist {
+            bonusTrail?.physicsBody?.affectedByGravity = false
+            bonusTrail?.targetNode = scene
+            newBall.addChild(bonusTrail?.copy() as! SKEmitterNode)
         }
         
         switch decider {
@@ -516,7 +634,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             
             newBall.position.x = 150
             newBall.position.y = -350
-          
+            
             worldNode.addChild(newBall)
             newBall.physicsBody!.applyImpulse(CGVector(dx: -100, dy: initialVelocity))
             newBall.zPosition = zIncrement
@@ -548,7 +666,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         
         //used to determine the max amount of force applied by the smalles possible platform
-        let maxScalar: CGFloat = 0.2
+        let maxScalar: CGFloat = 0.25
         
         //used to determine the position/placement of the particle effect
         let position = contact.contactPoint
@@ -578,7 +696,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 scoreLabel.text = String(score)
             }
             
-           
+            
             
         }
         if nodeB.name == "platform" && nodeA.name == "ball" {
@@ -601,7 +719,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 }
                 run(hitSound)
                 nodeA.physicsBody?.applyImpulse(scale(CGVector(dx: 0, dy: 450), maxScalar * force))
-               
+                
                 score += 1
                 scoreLabel.text = String(score)
             }
@@ -644,12 +762,12 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             previewLine?.removeFromParent()
             resetButton.isUserInteractionEnabled = false
             isUserInteractionEnabled = false
-            resetButton.run(SKAction.fadeIn(withDuration: 0.5),completion: {
+            resetButtonIcon.run(SKAction.fadeIn(withDuration: 0.5),completion: {
                 self.isUserInteractionEnabled = true
                 self.resetButton.isUserInteractionEnabled = true
                 nodeB.physicsBody?.restitution = 0.7
             })
-          
+            
         }
         if nodeA.name == "ball" && nodeB.name == "loseArea" {
             calcHighscore()
@@ -664,7 +782,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             previewLine?.removeFromParent()
             isUserInteractionEnabled = false
             resetButton.isUserInteractionEnabled = false
-            resetButton.run(SKAction.fadeIn(withDuration: 0.5), completion: {
+            resetButtonIcon.run(SKAction.fadeIn(withDuration: 0.5), completion: {
                 self.isUserInteractionEnabled = true
                 self.resetButton.isUserInteractionEnabled = true
                 nodeA.physicsBody?.restitution = 0.7
@@ -678,6 +796,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         
         if nodeA.name == "ball" && nodeB.name == "coin" {
+            run(coinSound)
             nodeB.run(SKAction.init(named: "coinCollect")!,completion: {
                 nodeB.removeFromParent()
             })
@@ -687,6 +806,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             coinExist = false
         }
         if nodeB.name == "ball" && nodeA.name == "coin" {
+            run(coinSound)
             nodeA.run(SKAction.init(named: "coinCollect")!, completion: {
                 nodeA.removeFromParent()
             })
@@ -737,7 +857,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         score = 0
         coinExist = false
         coinTimer = 0
-        resetButton.run(SKAction.fadeOut(withDuration: 0.3))
+        resetButtonIcon.run(SKAction.fadeOut(withDuration: 0.3))
         state = .play
         
     }
@@ -766,7 +886,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     }
     
     
-    //MARK: COINS 
+    //MARK: COINS
     
     func removeCoins() {
         for child in worldNode.children {
@@ -777,30 +897,88 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     }
     
     func spawnCoins() {
+  
         //spawn coins at a random time interval
-        print(coinTimer)
         if coinTimer > randomTime && !coinExist {
-            randomTime = CFTimeInterval(arc4random_uniform(10)) + 5
+            print("I spawned a coin")
+            randomTime = CFTimeInterval(arc4random_uniform(5)) + 5
             coinTimer = 0
             coinExist = true
             let xPos = Int(arc4random_uniform(240)) - 120
-            let yPos = Int(arc4random_uniform(100)) - 50 
+            let yPos = Int(arc4random_uniform(100)) - 50
             let coin = Coin()
             coin.position = CGPoint(x: xPos, y: yPos)
+            if isDay {
+            coin.blendMode = .subtract
+            }
             worldNode.addChild(coin)
+            
         }
     }
     
+    
+    //basic function to reset the gravity after the accelerometer has been used in the lose screen
     func resetGravity() {
         physicsWorld.gravity = CGVector(dx: 0, dy: -2)
     }
     
-    
+    //checks to see if a bonus is available
     func checkBonus() {
         for item in itemArray {
             if item.type == .bonus && item.inUse == true {
-                sparkleBool = true
+                bonusExist = true
+                
             }
+        }
+    }
+    
+    
+    //function that iterates through every single kind of a fucking object and either inverts the color or changes the blend mode to subtract
+    func negateValues() {
+        ballColor = negateColor(ballColor) //negates the ball Color
+        platformColor = negateColor(platformColor) //negates the platform color
+        self.backgroundColor = UIColor.init(netHex: 0xD9D9D9) //changes the background
+        sparkle?.particleBlendMode = .subtract //changes the blendmode of all the emitters that may or may not be used
+        rainbow?.particleBlendMode = .subtract
+        emitter?.particleBlendMode = .alpha
+        
+        for child in self.children {
+            
+            //changes all the label colors
+            if let label = child as? SKLabelNode {
+                label.blendMode = .subtract
+                label.colorBlendFactor = 1
+                label.color = UIColor.init(netHex: 0x000000)
+            }
+            
+            //changes all the sprite colors
+            if let sprite = child as? SKSpriteNode {
+                sprite.blendMode = .subtract
+            }
+        }
+        
+    }
+    
+    //function that takes in a UIColor and inverts it by subtracting 1 from it's value (this is what subtract does except as a blendmode)
+    func negateColor(_ color: UIColor) -> UIColor {
+        let baseColor = CIColor.init(color: color)
+        let newRed = 1 - baseColor.red
+        let newBlue = 1 - baseColor.blue
+        let newGreen = 1 - baseColor.green
+        
+        
+        return UIColor.init(red: newRed, green: newGreen, blue: newBlue, alpha: 1.0)
+        
+    }
+    
+    
+    func updateBallThreshold() {
+        if numberOfBalls() < 15 {
+            addBallThreshold = 5
+        }else if numberOfBalls() > 15 && numberOfBalls() < 25 {
+            addBallThreshold = 8
+        }else if numberOfBalls() > 25 {
+            addBallThreshold = 13
         }
     }
     //function that allows the shop to pass all of the information in

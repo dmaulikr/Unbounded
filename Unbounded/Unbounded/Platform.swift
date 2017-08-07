@@ -38,7 +38,9 @@ class Platform : SKShapeNode {
         //assigns the start and end values
         start = startPoint
         end = endPoint
-        
+        if color == UIColor.init(white: 1, alpha: 0.2) {
+            actualLine.glowWidth = 1
+        }
         //assigns the line width, stroke color, and line cap
         actualLine.lineWidth = 4
         actualLine.strokeColor = color
@@ -60,7 +62,7 @@ class Platform : SKShapeNode {
         
        //calculates the distance of the line and then sets the forceScalar relative to the length of the line (the larger the number, the more extreme the scalar becomes)
         length = calcDistance()
-        forceScalar = CGFloat(340 / length!)
+        forceScalar = CGFloat(360 / length!)
         
         //if the line is too long then set the timer to something lower to discourage spam
        // if length! > CGFloat(260) {

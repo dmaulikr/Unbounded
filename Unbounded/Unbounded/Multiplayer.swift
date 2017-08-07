@@ -49,6 +49,10 @@ class Multiplayer: SKScene, SKPhysicsContactDelegate {
     var blueStart: Bool = false
     var pauseButton: SKSpriteNode!
     
+    
+    var ballColor: UIColor = .white
+    var platColor: UIColor = .white
+    
     let terminalVelocity: CGFloat = 700
     let platformBounce: CGFloat = 200.0
     let restitution: CGFloat = 0.1
@@ -81,6 +85,7 @@ class Multiplayer: SKScene, SKPhysicsContactDelegate {
     var highscore = 0
     
     var hitSound = SKAction.playSoundFileNamed("HitSound", waitForCompletion: false)
+    var hitSound2 = SKAction.playSoundFileNamed("HitSound2", waitForCompletion: false)
     let trail = SKEmitterNode(fileNamed: "Trail.sks")
     let emitter = SKEmitterNode(fileNamed: "Impact.sks")
     
@@ -110,9 +115,19 @@ class Multiplayer: SKScene, SKPhysicsContactDelegate {
         rightWall.physicsBody?.linearDamping = 0.2
         physicsWorld.contactDelegate = self
         trail?.physicsBody?.affectedByGravity = false
-        trail?.targetNode = scene
+        trail?.targetNode = self.scene
         multiplayerRestart.isHidden = true
         
+        for item in itemArray {
+            if item.type == .ball && item.inUse == true {
+                ballColor = item.itemColor
+            }
+            if item.type == .platform && item.inUse == true {
+                platColor = item.itemColor
+            }
+        }
+        
+        let scene = GameScene.colors(ballColor: ballColor, platColor: platColor)
         
         multiplayerRestart.selectedHandler = {  [unowned self] in
             self.restart()
@@ -130,25 +145,23 @@ class Multiplayer: SKScene, SKPhysicsContactDelegate {
             
             
             let reveal = SKTransition.push(with: SKTransitionDirection.left, duration: 0.25)
-            if let view = self.view as! SKView? {
+            if let view = self.view {
                 // Load the SKScene from 'GameScene.sks'
-                if let scene = GameScene(fileNamed: "GameScene.sks"){
+           
                     // Set the scale mode to scale to fit the window
-                    scene.scaleMode = .aspectFit
+                    scene?.scaleMode = .aspectFit
                     // Present the scene
-                    self.view?.presentScene(scene, transition: reveal)
-                }
+                    self.view?.presentScene(scene!, transition: reveal)
+      
                 
                 view.ignoresSiblingOrder = true
-                
-                view.showsFPS = true
-                view.showsNodeCount = true
+             
                 
             }
         }
         
         
-   
+        
         
         
     }
@@ -317,7 +330,7 @@ class Multiplayer: SKScene, SKPhysicsContactDelegate {
                 addBalls()
                 ballTimer = 0
             }
-        }
+        
         
         //if the lives of either side equals zero then run the game over method
         if blueLivesNum == 0 || redLivesNum == 0 {
@@ -381,6 +394,7 @@ class Multiplayer: SKScene, SKPhysicsContactDelegate {
                     ball.readyToBounce = false
                 }
             }
+        }
         }
     }
     
@@ -493,7 +507,11 @@ class Multiplayer: SKScene, SKPhysicsContactDelegate {
                             emitter2.run(SKAction.fadeOut(withDuration: 0.1))
                         }
                     }
-                    run(hitSound)
+                    if ball.color == .blue {
+                        run(hitSound)
+                    }else {
+                        run(hitSound2)
+                    }
                     //nodeB.physicsBody?.velocity.dy = 0
                     if force > 0.8 {
                         nodeB.physicsBody?.applyImpulse(scale(CGVector(dx: 0, dy: Int(platformBounce) * direction), maxScalar * force))
@@ -539,7 +557,12 @@ class Multiplayer: SKScene, SKPhysicsContactDelegate {
                             emitter2.run(SKAction.fadeOut(withDuration: 0.1))
                         }
                     }
+                    
+                    if ball.color == .blue {
                     run(hitSound)
+                    }else {
+                        run(hitSound2)
+                    }
                     if force > 0.8 {
                         nodeA.physicsBody?.applyImpulse(scale(CGVector(dx: 0, dy: Int(platformBounce) * direction), maxScalar * force))
                     }

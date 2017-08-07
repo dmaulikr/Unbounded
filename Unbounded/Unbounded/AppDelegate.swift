@@ -7,14 +7,34 @@
 //
 
 import UIKit
+import GoogleMobileAds
 
 @UIApplicationMain
-class AppDelegate: UIResponder, UIApplicationDelegate {
+class AppDelegate: UIResponder, UIApplicationDelegate, GADRewardBasedVideoAdDelegate {
+    /// Tells the delegate that the reward based video ad has rewarded the user.
+    func rewardBasedVideoAd(_ rewardBasedVideoAd: GADRewardBasedVideoAd, didRewardUserWith reward: GADAdReward) {
+        bankDefault.set(bankDefault.integer(forKey: "bank") + 15, forKey: "bank")
+ 
+    }
+    
+    func rewardBasedVideoAdDidClose(_ rewardBasedVideoAd: GADRewardBasedVideoAd) {
+        GADRewardBasedVideoAd.sharedInstance().delegate = self
+        let request = GADRequest()
+        GADRewardBasedVideoAd.sharedInstance().load(request,
+                                                    withAdUnitID: "ca-app-pub-8233645734871172/1689255699")
+    }
 
     var window: UIWindow?
 
-
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
+        
+        GADMobileAds.configure(withApplicationID: "ca-app-pub-8233645734871172~3604262156")
+        GADRewardBasedVideoAd.sharedInstance().delegate = self
+        let request = GADRequest()
+        
+        
+        GADRewardBasedVideoAd.sharedInstance().load(request,
+                                                    withAdUnitID: "ca-app-pub-8233645734871172/1689255699")
         // Override point for customization after application launch.
         return true
     }

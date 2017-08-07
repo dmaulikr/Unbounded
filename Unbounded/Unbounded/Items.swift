@@ -10,7 +10,7 @@ import Foundation
 import SpriteKit
 import GameplayKit
 enum itemType {
-    case platform, ball, bonus
+    case platform, ball, bonus, dayNight
 }
 
 //welcome to the item class that populates the shop in this god forsaken game
@@ -38,12 +38,12 @@ class Items: SKSpriteNode {
     //the selected border
     var selected: SKSpriteNode!
     
-    
+    var buyEffect = SKEmitterNode(fileNamed: "buyEffect.sks")
     
     
     //initializer that determines the cost, item type, texture and color
     init(cost: Int, type: itemType, boughtTexture: SKTexture, color: UIColor){
-        
+        buyEffect?.zPosition = -5
         selected = SKSpriteNode(imageNamed: "selected")
         selected.scale(to: CGSize(width: 210, height: 150))
         selected.isHidden = true
@@ -90,7 +90,7 @@ class Items: SKSpriteNode {
  
     //updates the inUse boolean
     func update() {
-        if inUse == true {
+        if self.inUse == true {
             selected.isHidden = false
             costLabel.isHidden = true
         }else {
@@ -114,11 +114,15 @@ class Items: SKSpriteNode {
                 item.inUse = false
                 }
             }
+            self.addChild(buyEffect!)
+            buyEffect?.run(SKAction.fadeOut(withDuration: 0.5), completion: {
+                self.buyEffect?.removeFromParent()
+            })
             self.texture = boughtTexture
             inUse = true
             bought = true
             costLabel.isHidden = true
-            //bankDefault.set(bankDefault.integer(forKey: "bank")-cost, forKey: "bank")
+            bankDefault.set(bankDefault.integer(forKey: "bank")-cost, forKey: "bank")
             
             //the line of code above decrements the bank value and what not, pls uncomment for final version otherwise the shop will not work at all k thanks bye
             
@@ -132,10 +136,22 @@ class Items: SKSpriteNode {
             inUse = true
         }
         
-        if bought == true && self.type == .bonus {
-            inUse = !inUse
+       
+        if self.type == .bonus && inUse && self.bought == true{
+            for item in itemArray {
+                if item.type == self.type {
+                    item.inUse = false
+                }
+            }
+         
+        }else if self.type == .bonus && !inUse && self.bought == true {
+            for item in itemArray {
+                if item.type == self.type {
+                    item.inUse = false
+                }
+            }
+            self.inUse = true
         }
-        
          updateShop()
         
     }

@@ -14,6 +14,12 @@ let starburstOrange = UIColor.init(netHex: 0xEA604E)
 let royalPurple = UIColor.init(netHex: 0x663399)
 let cerulean = UIColor.init(netHex: 0x2a52be)
 let gold = UIColor.init(netHex: 0xFFD700)
+let pink = UIColor.init(netHex: 0xff69b4)
+let brick = UIColor.init(netHex: 0xad5050)
+let steel = UIColor.init(netHex: 0x4682b4)
+let beige = UIColor.init(netHex: 0xf5f5dc)
+let spring = UIColor.init(netHex: 0x00ff7f)
+let mediumPurple = UIColor.init(netHex: 0x9370db)
 
 
 extension UIColor {
